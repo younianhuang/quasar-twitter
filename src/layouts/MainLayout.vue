@@ -1,8 +1,8 @@
 <template>
-  <q-layout view="lHr lpR fFf">
+  <q-layout ref="layout" view="lHr lpR fFf" @resize="onResize">
     <q-header bordered class="bg-white text-black">
       <q-toolbar>
-        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+        <!-- q-btn dense flat round icon="menu" @click="toggleLeftDrawer" /-->
 
         <q-toolbar-title class="text-weight-bold q-pa-md">
           Home
@@ -16,7 +16,9 @@
       side="left"
       bordered
       :width="300"
-      class="left-drawer"
+      :mini="miniModeState"
+      :class="{ left: !miniModeState }"
+      behavior="desktop"
     >
       <q-icon
         name="fa-brands fa-twitter"
@@ -51,6 +53,7 @@
       v-model="rightDrawerOpen"
       side="right"
       bordered
+      :width="400"
       class="right-drawer"
     >
       <q-input
@@ -109,6 +112,7 @@ export default {
       leftDrawerOpen: false,
       rightDrawerOpen: false,
       searchText: '',
+      miniModeState: false,
     };
   },
 
@@ -119,12 +123,22 @@ export default {
     toggleRightDrawer() {
       this.rightDrawerOpen = !this.rightDrawerOpen;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onResize(size: any) {
+      this.miniModeState = this.$q.platform.is.mobile
+        ? true
+        : size.width < 1024;
+    },
+  },
+
+  mounted() {
+    this.miniModeState = this.$q.platform.is.mobile as boolean;
   },
 };
 </script>
 
 <style lang="scss">
-.left-drawer {
+.left {
   padding-left: 100px;
   padding-right: 20px;
 }
