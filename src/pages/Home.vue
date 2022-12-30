@@ -9,18 +9,19 @@
 
       <q-input
         bottom-slots
-        v-model="newTwitterText"
+        v-model="newContent"
         placeholder="What's happening?"
         counter
         autogrow
-        maxlength="240"
-        class="q-pl-xl"
+        maxlength="280"
+        class="q-pl-xl input"
+        style="line-height: 20px"
       >
         <template v-slot:append>
           <q-icon
-            v-if="newTwitterText !== ''"
+            v-if="newContent !== ''"
             name="close"
-            @click="newTwitterText = ''"
+            @click="newContent = ''"
             class="cursor-pointer"
           />
         </template>
@@ -32,7 +33,7 @@
           no-caps
           color="primary"
           label="Tweet"
-          :disable="!newTwitterText"
+          :disable="!newContent"
         />
       </div>
     </div>
@@ -46,8 +47,15 @@ export default defineComponent({
   name: 'HomePage',
   data() {
     return {
-      newTwitterText: '',
+      newContent: '',
     };
   },
 });
 </script>
+
+<style lang="scss">
+.input textarea {
+  font-size: 20px;
+  line-height: 1.5 !important;
+}
+</style>
