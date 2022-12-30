@@ -1,35 +1,41 @@
 <template>
-  <q-page>
-    <q-input
-      outlined
-      bottom-slots
-      v-model="text"
-      placeholder="What's happening?"
-      counter
-      maxlength="240"
-    >
-      <template v-slot:before>
+  <q-page class="q-pa-md">
+    <div class="col q-gutter-md">
+      <div>
         <q-avatar>
           <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
         </q-avatar>
-      </template>
+      </div>
 
-      <template v-slot:append>
-        <q-icon
-          v-if="text !== ''"
-          name="close"
-          @click="text = ''"
-          class="cursor-pointer"
+      <q-input
+        bottom-slots
+        v-model="newTwitterText"
+        placeholder="What's happening?"
+        counter
+        autogrow
+        maxlength="240"
+        class="q-pl-xl"
+      >
+        <template v-slot:append>
+          <q-icon
+            v-if="newTwitterText !== ''"
+            name="close"
+            @click="newTwitterText = ''"
+            class="cursor-pointer"
+          />
+        </template>
+      </q-input>
+      <div class="row">
+        <q-space /><q-btn
+          unelevated
+          rounded
+          no-caps
+          color="primary"
+          label="Tweet"
+          :disable="!newTwitterText"
         />
-        <q-icon name="schedule" />
-      </template>
-
-      <template v-slot:hint> Field hint </template>
-
-      <template v-slot:after>
-        <q-btn round dense flat icon="send" />
-      </template>
-    </q-input>
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -40,7 +46,7 @@ export default defineComponent({
   name: 'HomePage',
   data() {
     return {
-      text: '',
+      newTwitterText: '',
     };
   },
 });
