@@ -5,7 +5,7 @@
         <!-- q-btn dense flat round icon="menu" @click="toggleLeftDrawer" /-->
 
         <q-toolbar-title class="text-weight-bold q-pa-md">
-          Home
+          {{ $route.name }}
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -27,21 +27,19 @@
       />
 
       <q-list>
-        <q-item clickable v-ripple to="/">
+        <q-item clickable v-ripple exact to="/">
           <q-item-section avatar>
-            <q-icon size="md" color="black" name="home" />
+            <q-icon size="md" name="home" />
           </q-item-section>
 
-          <q-item-section class="text-h6 text-weight-bold text-black"
-            >Home</q-item-section
-          >
+          <q-item-section class="text-h6 text-weight-bold">Home</q-item-section>
         </q-item>
-        <q-item clickable v-ripple to="/about">
+        <q-item clickable v-ripple exact :to="{ name: 'About' }">
           <q-item-section avatar>
-            <q-icon size="md" color="black" name="help" />
+            <q-icon size="md" name="help" />
           </q-item-section>
 
-          <q-item-section class="text-h6 text-weight-bold text-black"
+          <q-item-section class="text-h6 text-weight-bold"
             >About</q-item-section
           >
         </q-item>
