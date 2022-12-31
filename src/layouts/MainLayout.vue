@@ -1,5 +1,5 @@
 <template>
-  <q-layout ref="layout" view="lHr lpR fFf" @resize="onResize">
+  <q-layout view="lHr LpR fFf" @resize="onResize">
     <q-header bordered class="bg-white text-black">
       <q-toolbar>
         <!-- q-btn dense flat round icon="menu" @click="toggleLeftDrawer" /-->
@@ -15,35 +15,39 @@
       show-if-above
       side="left"
       bordered
-      :width="300"
+      :width="leftDrawerWidth"
       :mini="miniModeState"
-      :class="{ left: !miniModeState }"
+      :class="{ leftDrawer: !miniModeState }"
       behavior="desktop"
     >
-      <q-icon
-        name="fa-brands fa-twitter"
-        size="md"
-        class="q-pa-md text-primary"
-      />
+      <div :class="{ leftList: !miniModeState }">
+        <q-icon
+          name="fa-brands fa-twitter"
+          size="md"
+          class="q-pa-md text-primary"
+        />
 
-      <q-list>
-        <q-item clickable v-ripple exact to="/">
-          <q-item-section avatar>
-            <q-icon size="md" name="home" />
-          </q-item-section>
+        <q-list>
+          <q-item clickable v-ripple exact to="/">
+            <q-item-section avatar>
+              <q-icon size="md" name="home" />
+            </q-item-section>
 
-          <q-item-section class="text-h6 text-weight-bold">Home</q-item-section>
-        </q-item>
-        <q-item clickable v-ripple exact :to="{ name: 'About' }">
-          <q-item-section avatar>
-            <q-icon size="md" name="help" />
-          </q-item-section>
+            <q-item-section class="text-h6 text-weight-bold"
+              >Home</q-item-section
+            >
+          </q-item>
+          <q-item clickable v-ripple exact :to="{ name: 'About' }">
+            <q-item-section avatar>
+              <q-icon size="md" name="help" />
+            </q-item-section>
 
-          <q-item-section class="text-h6 text-weight-bold"
-            >About</q-item-section
-          >
-        </q-item>
-      </q-list>
+            <q-item-section class="text-h6 text-weight-bold"
+              >About</q-item-section
+            >
+          </q-item>
+        </q-list>
+      </div>
     </q-drawer>
 
     <q-drawer
@@ -51,50 +55,53 @@
       v-model="rightDrawerOpen"
       side="right"
       bordered
-      :width="400"
+      :width="rightDrawerWidth"
+      :breakpoint="rightDrawerBreakPoint"
       class="right-drawer"
     >
-      <q-input
-        v-model="searchText"
-        dense
-        rounded
-        outlined
-        placeholder="search"
-        class="q-pa-sm"
-        bg-color="grey-3"
-      >
-        <template v-slot:prepend>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-
-      <q-list padding>
-        <q-item-label class="text-h6 text-black text-weight-bold" header
-          >Trends for you</q-item-label
+      <div class="trends" v-show="showRightDrawerContent">
+        <q-input
+          v-model="searchText"
+          dense
+          rounded
+          outlined
+          placeholder="search"
+          class="q-pa-sm"
+          bg-color="grey-3"
         >
-        <q-item>
-          <q-item-section>
-            <q-item-label overline class="text-grey">OVERLINE</q-item-label>
-            <q-item-label>Single line item</q-item-label>
-            <q-item-label caption>1234 tweets</q-item-label>
-          </q-item-section>
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+        </q-input>
 
-          <q-item-section side top>
-            <q-item-label caption>5 min ago</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item>
-          <q-item-section>
-            <q-item-label overline class="text-grey">OVERLINE</q-item-label>
-            <q-item-label>Single line item</q-item-label>
-            <q-item-label caption>1234 tweets</q-item-label>
-          </q-item-section>
+        <q-list padding>
+          <q-item-label class="text-h6 text-black text-weight-bold" header
+            >Trends for you</q-item-label
+          >
+          <q-item>
+            <q-item-section>
+              <q-item-label overline class="text-grey">OVERLINE</q-item-label>
+              <q-item-label>Single line item</q-item-label>
+              <q-item-label caption>1234 tweets</q-item-label>
+            </q-item-section>
 
-          <q-item-section side top>
-            <q-item-label caption>5 min ago</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
+            <q-item-section side top>
+              <q-item-label caption>5 min ago</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <q-item-label overline class="text-grey">OVERLINE</q-item-label>
+              <q-item-label>Single line item</q-item-label>
+              <q-item-label caption>1234 tweets</q-item-label>
+            </q-item-section>
+
+            <q-item-section side top>
+              <q-item-label caption>5 min ago</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
     </q-drawer>
 
     <q-page-container>
@@ -104,11 +111,19 @@
 </template>
 
 <script lang="ts">
+const DefaultLeftDrawertWidth = 300;
+const DefaultRightDrawertWidth = 350;
+const RightDrawerDisplayWidth = 300;
+const MiniWidth = 60;
+const PageWidth = 600;
+
 export default {
   data() {
     return {
       leftDrawerOpen: false,
       rightDrawerOpen: false,
+      leftDrawerWidth: DefaultLeftDrawertWidth,
+      rightDrawerWidth: DefaultRightDrawertWidth,
       searchText: '',
       miniModeState: false,
     };
@@ -123,26 +138,65 @@ export default {
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onResize(size: any) {
+      this.caculateLayout(size.width);
+    },
+    caculateLayout(layoutWidth: number): void {
       this.miniModeState = this.$q.platform.is.mobile
         ? true
-        : size.width < 1024;
+        : layoutWidth < this.miniModeBreakPoint;
+
+      if (!this.miniModeState) {
+        this.rightDrawerWidth = Math.max(
+          (layoutWidth - PageWidth) * 0.5,
+          DefaultRightDrawertWidth
+        );
+        this.leftDrawerWidth = layoutWidth - PageWidth - this.rightDrawerWidth;
+      } else {
+        this.rightDrawerWidth = layoutWidth - PageWidth;
+      }
+    },
+  },
+
+  computed: {
+    rightDrawerBreakPoint(): number {
+      return PageWidth;
+    },
+
+    miniModeBreakPoint(): number {
+      return PageWidth + DefaultRightDrawertWidth + MiniWidth + 64;
+    },
+    showRightDrawerContent(): boolean {
+      return this.rightDrawerWidth > RightDrawerDisplayWidth;
     },
   },
 
   mounted() {
     this.miniModeState = this.$q.platform.is.mobile as boolean;
+    const layout = this.$el as HTMLElement;
+    this.caculateLayout(layout.clientWidth);
   },
 };
 </script>
 
 <style lang="scss">
-.left {
-  padding-left: 100px;
-  padding-right: 20px;
+$drawer-padding: 20px;
+
+.leftDrawer {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: $drawer-padding;
+}
+
+.leftList {
+  width: 200px;
 }
 
 .right-drawer {
-  padding-right: 100px;
-  padding-left: 20px;
+  display: flex;
+  padding-left: $drawer-padding;
+}
+
+.trends {
+  width: 300px;
 }
 </style>

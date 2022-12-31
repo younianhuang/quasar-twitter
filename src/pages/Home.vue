@@ -104,13 +104,35 @@ export default defineComponent({
   data() {
     return {
       newTweetContent: '',
-      tweets: new Array<Tweet>(),
+      //tweets: new Array<Tweet>(),
+      tweets: [
+        {
+          content:
+            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus corrupti optio cupiditate reiciendis, natus, blanditiis nemo enim ipsum provident rerum excepturi qui similique quod doloremque debitis, eveniet aliquid quas laudantium!',
+          date: Date.now(),
+        },
+        {
+          content:
+            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus corrupti optio cupiditate reiciendis, natus, blanditiis nemo enim ipsum provident rerum excepturi qui similique quod doloremque debitis, eveniet aliquid quas laudantium!',
+          date: Date.now(),
+        },
+        {
+          content:
+            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus corrupti optio cupiditate reiciendis, natus, blanditiis nemo enim ipsum provident rerum excepturi qui similique quod doloremque debitis, eveniet aliquid quas laudantium!',
+          date: Date.now(),
+        },
+        {
+          content:
+            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus corrupti optio cupiditate reiciendis, natus, blanditiis nemo enim ipsum provident rerum excepturi qui similique quod doloremque debitis, eveniet aliquid quas laudantium!',
+          date: Date.now(),
+        },
+      ],
     };
   },
 
   methods: {
     relativeDate(value: number): string {
-      return formatDistance(value, new Date());
+      return formatDistance(value, new Date(), { addSuffix: true });
     },
     addNewTweet(): void {
       this.tweets.unshift({
