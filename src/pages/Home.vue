@@ -39,53 +39,66 @@
       </div>
     </div>
     <q-separator size="5px" spaced />
-    <q-list separator>
-      <q-item v-for="tweet in tweets" :key="tweet.date" clickable>
-        <q-item-section avatar top>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
-          </q-avatar>
-        </q-item-section>
 
-        <q-item-section>
-          <q-item-label>
-            <span class="text-weight-bold">Nolan Huang</span>
-            ><span class="text-grey-7"> @nolanhuang</span
-            ><span class="text-grey-7">
-              · {{ relativeDate(tweet.date) }}</span
-            ></q-item-label
-          >
-          <q-item-label>
-            <p class="tweet-content">{{ tweet.content }}</p>
-          </q-item-label>
-          <div class="row justify-between q-mt-sm tweet-button">
-            <q-btn flat round color="grey-7" icon="far fa-comment" size="sm" />
-            <q-btn
-              flat
-              round
-              color="grey-7"
-              icon="fa-solid fa-retweet"
-              size="sm"
-            />
-            <q-btn flat round color="grey-7" icon="far fa-heart" size="sm" />
-            <q-btn
-              flat
-              round
-              color="grey-7"
-              icon="fa-solid fa-arrow-up-from-bracket"
-              size="sm"
-            />
-            <q-btn
-              flat
-              round
-              color="grey-7"
-              icon="fa-regular fa-trash-can"
-              size="sm"
-              @click="deleteTweet(tweet)"
-            />
-          </div>
-        </q-item-section>
-      </q-item>
+    <q-list separator>
+      <transition-group
+        appear
+        enter-active-class="animated fadeIn slower"
+        leave-active-class="animated fadeOut slower"
+      >
+        <q-item v-for="tweet in tweets" :key="tweet.date" clickable>
+          <q-item-section avatar top>
+            <q-avatar>
+              <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
+            </q-avatar>
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>
+              <span class="text-weight-bold">Nolan Huang</span>
+              ><span class="text-grey-7"> @nolanhuang</span
+              ><span class="text-grey-7">
+                · {{ relativeDate(tweet.date) }}</span
+              ></q-item-label
+            >
+            <q-item-label>
+              <p class="tweet-content">{{ tweet.content }}</p>
+            </q-item-label>
+            <div class="row justify-between q-mt-sm tweet-button">
+              <q-btn
+                flat
+                round
+                color="grey-7"
+                icon="far fa-comment"
+                size="sm"
+              />
+              <q-btn
+                flat
+                round
+                color="grey-7"
+                icon="fa-solid fa-retweet"
+                size="sm"
+              />
+              <q-btn flat round color="grey-7" icon="far fa-heart" size="sm" />
+              <q-btn
+                flat
+                round
+                color="grey-7"
+                icon="fa-solid fa-arrow-up-from-bracket"
+                size="sm"
+              />
+              <q-btn
+                flat
+                round
+                color="grey-7"
+                icon="fa-regular fa-trash-can"
+                size="sm"
+                @click="deleteTweet(tweet)"
+              />
+            </div>
+          </q-item-section>
+        </q-item>
+      </transition-group>
     </q-list>
   </q-page>
 </template>
@@ -114,17 +127,17 @@ export default defineComponent({
         {
           content:
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus corrupti optio cupiditate reiciendis, natus, blanditiis nemo enim ipsum provident rerum excepturi qui similique quod doloremque debitis, eveniet aliquid quas laudantium!',
-          date: Date.now(),
+          date: Date.now() + 1,
         },
         {
           content:
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus corrupti optio cupiditate reiciendis, natus, blanditiis nemo enim ipsum provident rerum excepturi qui similique quod doloremque debitis, eveniet aliquid quas laudantium!',
-          date: Date.now(),
+          date: Date.now() + 2,
         },
         {
           content:
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus corrupti optio cupiditate reiciendis, natus, blanditiis nemo enim ipsum provident rerum excepturi qui similique quod doloremque debitis, eveniet aliquid quas laudantium!',
-          date: Date.now(),
+          date: Date.now() + 3,
         },
       ],
     };
