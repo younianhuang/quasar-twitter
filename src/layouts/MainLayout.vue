@@ -17,18 +17,18 @@
       bordered
       :width="leftDrawerWidth"
       :mini="miniModeState"
-      :class="{ leftDrawer: !miniModeState }"
+      :class="{ 'left-drawer': !miniModeState }"
       behavior="desktop"
     >
-      <div :class="{ leftList: !miniModeState }">
+      <div :class="{ 'left-list': !miniModeState }">
         <q-icon
           name="fa-brands fa-twitter"
           size="md"
-          class="q-pa-md text-primary"
+          class="text-primary q-py-lg"
+          :class="miniModeState ? 'q-pl-md' : 'q-pl-lg'"
         />
-
         <q-list>
-          <q-item clickable v-ripple exact to="/">
+          <q-item clickable exact to="/" class="focus-item">
             <q-item-section avatar>
               <q-icon size="md" name="home" />
             </q-item-section>
@@ -37,7 +37,7 @@
               >Home</q-item-section
             >
           </q-item>
-          <q-item clickable v-ripple exact :to="{ name: 'About' }">
+          <q-item clickable exact :to="{ name: 'About' }" class="focus-item">
             <q-item-section avatar>
               <q-icon size="md" name="help" />
             </q-item-section>
@@ -112,7 +112,7 @@
 
 <script lang="ts">
 const DefaultLeftDrawertWidth = 300;
-const DefaultRightDrawertWidth = 350;
+const DefaultRightDrawertWidth = 360;
 const RightDrawerDisplayWidth = 300;
 const MiniWidth = 60;
 const PageWidth = 600;
@@ -145,25 +145,25 @@ export default {
         ? true
         : layoutWidth < this.miniModeBreakPoint;
 
-      if (!this.miniModeState) {
+      if (this.miniModeState) {
+        this.rightDrawerWidth = layoutWidth - PageWidth - MiniWidth;
+      } else {
         this.rightDrawerWidth = Math.max(
           (layoutWidth - PageWidth) * 0.5,
           DefaultRightDrawertWidth
         );
         this.leftDrawerWidth = layoutWidth - PageWidth - this.rightDrawerWidth;
-      } else {
-        this.rightDrawerWidth = layoutWidth - PageWidth;
       }
     },
   },
 
   computed: {
     rightDrawerBreakPoint(): number {
-      return PageWidth;
+      return PageWidth + MiniWidth;
     },
 
     miniModeBreakPoint(): number {
-      return PageWidth + DefaultRightDrawertWidth + MiniWidth + 64;
+      return PageWidth + DefaultRightDrawertWidth + 200;
     },
     showRightDrawerContent(): boolean {
       return this.rightDrawerWidth > RightDrawerDisplayWidth;
@@ -181,13 +181,13 @@ export default {
 <style lang="scss">
 $drawer-padding: 20px;
 
-.leftDrawer {
+.left-drawer {
   display: flex;
   justify-content: flex-end;
   padding-right: $drawer-padding;
 }
 
-.leftList {
+.left-list {
   width: 200px;
 }
 
@@ -198,5 +198,11 @@ $drawer-padding: 20px;
 
 .trends {
   width: 300px;
+}
+
+.focus-item {
+  border-radius: 25px;
+  width: 80%;
+  margin-left: 6px;
 }
 </style>
