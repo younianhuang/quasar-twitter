@@ -46,7 +46,7 @@
         enter-active-class="animated fadeIn slower"
         leave-active-class="animated fadeOut slower"
       >
-        <q-item v-for="tweet in tweets" :key="tweet.date" clickable>
+        <q-item v-for="tweet in tweets" :key="tweet.id" clickable>
           <q-item-section avatar top>
             <q-avatar>
               <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
@@ -79,7 +79,14 @@
                 icon="fa-solid fa-retweet"
                 size="sm"
               />
-              <q-btn flat round color="grey-7" icon="far fa-heart" size="sm" />
+              <q-btn
+                flat
+                round
+                :color="tweet.like ? 'red' : 'grey-7'"
+                :icon="tweet.like ? 'fa-solid fa-heart' : 'far fa-heart'"
+                size="sm"
+                @click="toogleLike(tweet)"
+              />
               <q-btn
                 flat
                 round
@@ -106,10 +113,25 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { formatDistance } from 'date-fns';
+import { db } from 'src/boot/firebase';
+import {
+  collection,
+  query,
+  onSnapshot,
+  Unsubscribe,
+  orderBy,
+  limit,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  doc,
+} from 'firebase/firestore';
 
 type Tweet = {
+  id: string;
   content: string;
   date: number;
+  like: boolean;
 };
 
 export default defineComponent({
@@ -117,29 +139,8 @@ export default defineComponent({
   data() {
     return {
       newTweetContent: '',
-      //tweets: new Array<Tweet>(),
-      tweets: [
-        {
-          content:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus corrupti optio cupiditate reiciendis, natus, blanditiis nemo enim ipsum provident rerum excepturi qui similique quod doloremque debitis, eveniet aliquid quas laudantium!',
-          date: Date.now(),
-        },
-        {
-          content:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus corrupti optio cupiditate reiciendis, natus, blanditiis nemo enim ipsum provident rerum excepturi qui similique quod doloremque debitis, eveniet aliquid quas laudantium!',
-          date: Date.now() + 1,
-        },
-        {
-          content:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus corrupti optio cupiditate reiciendis, natus, blanditiis nemo enim ipsum provident rerum excepturi qui similique quod doloremque debitis, eveniet aliquid quas laudantium!',
-          date: Date.now() + 2,
-        },
-        {
-          content:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus corrupti optio cupiditate reiciendis, natus, blanditiis nemo enim ipsum provident rerum excepturi qui similique quod doloremque debitis, eveniet aliquid quas laudantium!',
-          date: Date.now() + 3,
-        },
-      ],
+      tweets: new Array<Tweet>(),
+      unsubscribe: <Unsubscribe | null>null,
     };
   },
 
@@ -147,18 +148,58 @@ export default defineComponent({
     relativeDate(value: number): string {
       return formatDistance(value, new Date(), { addSuffix: true });
     },
-    addNewTweet(): void {
-      this.tweets.unshift({
+    async addNewTweet(): Promise<void> {
+      // Add a new document with a generated id..
+      // const docRef = await addDoc(collection(db, 'tweets'), {
+      await addDoc(collection(db, 'tweets'), {
         content: this.newTweetContent,
         date: Date.now(),
+        like: false,
       });
 
       this.newTweetContent = '';
     },
-    deleteTweet(tweet: Tweet): void {
-      const index = this.tweets.findIndex((t) => t.date === tweet.date);
-      this.tweets.splice(index, 1);
+    async deleteTweet(tweet: Tweet): Promise<void> {
+      await deleteDoc(doc(db, 'tweets', tweet.id));
     },
+    async toogleLike(tweet: Tweet): Promise<void> {
+      const tweetRef = doc(db, 'tweets', tweet.id);
+
+      await updateDoc(tweetRef, {
+        like: !tweet.like,
+      });
+    },
+  },
+  mounted() {
+    const q = query(collection(db, 'tweets'), orderBy('date'), limit(100));
+    this.unsubscribe = onSnapshot(q, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        const data = change.doc.data();
+        const tweet = {
+          id: change.doc.id,
+          content: data.content,
+          date: data.date,
+          like: data.like,
+        };
+
+        if (change.type === 'added') {
+          this.tweets.unshift(tweet);
+        }
+        if (change.type === 'modified') {
+          const index = this.tweets.findIndex((t) => t.id === tweet.id);
+          Object.assign(this.tweets[index], tweet);
+        }
+        if (change.type === 'removed') {
+          const index = this.tweets.findIndex((t) => t.id === tweet.id);
+          this.tweets.splice(index, 1);
+        }
+      });
+    });
+  },
+  unmounted() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
   },
 });
 </script>
