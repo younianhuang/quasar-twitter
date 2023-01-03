@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
       - name: 📥 Install dependencies
-        run: yarn install --production
+        run: yarn install
       - name: Build the project
         run: yarn run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
