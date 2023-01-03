@@ -46,7 +46,7 @@
         enter-active-class="animated fadeIn slower"
         leave-active-class="animated fadeOut slower"
       >
-        <q-item v-for="tweet in tweets" :key="tweet.id" clickable>
+        <q-item v-for="tweet in store.tweets" :key="tweet.id" clickable>
           <q-item-section avatar top>
             <q-avatar>
               <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
@@ -113,34 +113,14 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { formatDistance } from 'date-fns';
-import { db } from 'src/boot/firebase';
-import {
-  collection,
-  query,
-  onSnapshot,
-  Unsubscribe,
-  orderBy,
-  limit,
-  addDoc,
-  deleteDoc,
-  updateDoc,
-  doc,
-} from 'firebase/firestore';
-
-type Tweet = {
-  id: string;
-  content: string;
-  date: number;
-  like: boolean;
-};
+import { useTweetStore, Tweet } from 'stores/TweetStore';
 
 export default defineComponent({
   name: 'HomePage',
   data() {
     return {
       newTweetContent: '',
-      tweets: new Array<Tweet>(),
-      unsubscribe: <Unsubscribe | null>null,
+      store: useTweetStore(),
     };
   },
 
@@ -149,57 +129,21 @@ export default defineComponent({
       return formatDistance(value, new Date(), { addSuffix: true });
     },
     async addNewTweet(): Promise<void> {
-      // Add a new document with a generated id..
-      // const docRef = await addDoc(collection(db, 'tweets'), {
-      await addDoc(collection(db, 'tweets'), {
-        content: this.newTweetContent,
-        date: Date.now(),
-        like: false,
-      });
-
+      await this.store.addTweet(this.newTweetContent);
       this.newTweetContent = '';
     },
     async deleteTweet(tweet: Tweet): Promise<void> {
-      await deleteDoc(doc(db, 'tweets', tweet.id));
+      await this.store.deleteTweet(tweet.id);
     },
     async toogleLike(tweet: Tweet): Promise<void> {
-      const tweetRef = doc(db, 'tweets', tweet.id);
-
-      await updateDoc(tweetRef, {
-        like: !tweet.like,
-      });
+      await this.store.updateTweet(tweet.id, { like: !tweet.like });
     },
   },
   mounted() {
-    const q = query(collection(db, 'tweets'), orderBy('date'), limit(100));
-    this.unsubscribe = onSnapshot(q, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        const data = change.doc.data();
-        const tweet = {
-          id: change.doc.id,
-          content: data.content,
-          date: data.date,
-          like: data.like,
-        };
-
-        if (change.type === 'added') {
-          this.tweets.unshift(tweet);
-        }
-        if (change.type === 'modified') {
-          const index = this.tweets.findIndex((t) => t.id === tweet.id);
-          Object.assign(this.tweets[index], tweet);
-        }
-        if (change.type === 'removed') {
-          const index = this.tweets.findIndex((t) => t.id === tweet.id);
-          this.tweets.splice(index, 1);
-        }
-      });
-    });
+    this.store.setup();
   },
   unmounted() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
+    this.store.shutdown();
   },
 });
 </script>

@@ -12,6 +12,10 @@ This is a simple Twitter clone made with Vue.js and Quasar framework.
 - Cloud FireStore
 - typescript
 
+## Live Demo
+
+https://quasar-twitter.web.app/#/
+
 ### Install the dependencies
 
 ```bash
