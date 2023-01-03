@@ -113,7 +113,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { formatDistance } from 'date-fns';
-import { useTweetStore, Tweet } from 'stores/TweetStore';
+import { useTweetStore } from 'stores/TweetStore';
 
 export default defineComponent({
   name: 'HomePage',

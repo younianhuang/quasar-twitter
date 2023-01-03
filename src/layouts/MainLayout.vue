@@ -111,6 +111,17 @@
         </keep-alive>
       </router-view>
     </q-page-container>
+
+    <q-footer v-model="footerOpen" bordered class="bg-white text-black">
+      <q-toolbar>
+        <q-toolbar-title class="row justify-around">
+          <q-btn flat round icon="home" />
+          <q-btn flat round icon="search" />
+          <q-btn flat round icon="notifications" />
+          <q-btn flat round icon="mail" />
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-footer>
   </q-layout>
 </template>
 
@@ -126,6 +137,7 @@ export default {
     return {
       leftDrawerOpen: false,
       rightDrawerOpen: false,
+      footerOpen: false,
       leftDrawerWidth: DefaultLeftDrawertWidth,
       rightDrawerWidth: DefaultRightDrawertWidth,
       searchText: '',
@@ -142,12 +154,12 @@ export default {
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onResize(size: any) {
-      this.caculateLayout(size.width);
+      if (!this.isMobile) {
+        this.caculateLayout(size.width);
+      }
     },
     caculateLayout(layoutWidth: number): void {
-      this.miniModeState = this.$q.platform.is.mobile
-        ? true
-        : layoutWidth < this.miniModeBreakPoint;
+      this.miniModeState = layoutWidth < this.miniModeBreakPoint;
 
       if (this.miniModeState) {
         this.rightDrawerWidth = layoutWidth - PageWidth - MiniWidth;
@@ -172,12 +184,24 @@ export default {
     showRightDrawerContent(): boolean {
       return this.rightDrawerWidth > RightDrawerDisplayWidth;
     },
+
+    isMobile(): boolean {
+      return this.$q.platform.is.mobile ? true : false;
+    },
   },
 
   mounted() {
-    this.miniModeState = this.$q.platform.is.mobile as boolean;
-    const layout = this.$el as HTMLElement;
-    this.caculateLayout(layout.clientWidth);
+    if (this.isMobile) {
+      this.footerOpen = true;
+      this.leftDrawerOpen = false;
+      this.rightDrawerOpen = false;
+    } else {
+      this.footerOpen = false;
+      this.leftDrawerOpen = true;
+      this.rightDrawerOpen = true;
+      const layout = this.$el as HTMLElement;
+      this.caculateLayout(layout.clientWidth);
+    }
   },
 };
 </script>
