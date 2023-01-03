@@ -113,7 +113,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { formatDistance } from 'date-fns';
-import { useTweetStore } from 'stores/TweetStore';
+import { useTweetStore, Tweet } from 'stores/TweetStore';
 
 export default defineComponent({
   name: 'HomePage',
@@ -133,7 +133,34 @@ export default defineComponent({
       this.newTweetContent = '';
     },
     async deleteTweet(tweet: Tweet): Promise<void> {
-      await this.store.deleteTweet(tweet.id);
+      this.$q
+        .dialog({
+          title: 'Delete Tweet?',
+          message:
+            'This can’t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from Twitter search results. ',
+          cancel: {
+            rounded: true,
+            color: 'white',
+            'text-color': 'black',
+            padding: '10px 50px',
+          },
+          ok: {
+            label: 'Delete',
+            rounded: true,
+            color: 'red',
+            padding: '10px 50px',
+          },
+          stackButtons: true,
+        })
+        .onOk(() => {
+          this.store.deleteTweet(tweet.id).then(() => {
+            this.$q.notify({
+              message: 'Tweet deleted.',
+              color: 'secondary',
+              timeout: 2000,
+            });
+          });
+        });
     },
     async toogleLike(tweet: Tweet): Promise<void> {
       await this.store.updateTweet(tweet.id, { like: !tweet.like });
