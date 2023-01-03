@@ -33,3 +33,4 @@ yarn-error.log*
 *.sln
 .vscode
 src-electron
+.firebase/hosting.ZGlzdFxzcGE.cache
