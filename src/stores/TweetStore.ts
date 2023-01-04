@@ -47,7 +47,7 @@ export const useTweetStore = defineStore('tweet', {
       await updateDoc(tweetRef, data);
     },
 
-    setup() {
+    init() {
       const q = query(collection(db, 'tweets'), orderBy('date'), limit(100));
 
       this.unsubscribe = onSnapshot(q, (snapshot) => {

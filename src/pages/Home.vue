@@ -166,12 +166,6 @@ export default defineComponent({
       await this.store.updateTweet(tweet.id, { like: !tweet.like });
     },
   },
-  mounted() {
-    this.store.setup();
-  },
-  unmounted() {
-    this.store.shutdown();
-  },
 });
 </script>
 
