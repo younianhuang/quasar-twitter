@@ -3,7 +3,15 @@
     <div class="col q-gutter-md q-pa-md">
       <div>
         <q-avatar>
-          <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
+          <!-- <img src="https://cdn.quasar.dev/img/avatar5.jpg" /> -->
+          <q-btn
+            dense
+            color="orange"
+            round
+            :label="authStore.user.name.charAt(0)"
+            class=""
+          >
+          </q-btn>
         </q-avatar>
       </div>
 
@@ -46,10 +54,16 @@
         enter-active-class="animated fadeIn slower"
         leave-active-class="animated fadeOut slower"
       >
-        <q-item v-for="tweet in store.tweets" :key="tweet.id" clickable>
+        <q-item v-for="tweet in tweenStore.tweets" :key="tweet.id" clickable>
           <q-item-section avatar top>
             <q-avatar>
-              <img src="https://cdn.quasar.dev/img/avatar2.jpg" />
+              <!-- <img src="https://cdn.quasar.dev/img/avatar2.jpg" /> -->
+              <q-badge
+                rounded
+                color="orange"
+                :label="authStore.user.name.charAt(0)"
+                class="text-body2"
+              />
             </q-avatar>
           </q-item-section>
 
@@ -114,13 +128,15 @@
 import { defineComponent } from 'vue';
 import { formatDistance } from 'date-fns';
 import { useTweetStore, Tweet } from 'stores/TweetStore';
+import { useAuthStore } from 'stores/AuthStore';
 
 export default defineComponent({
   name: 'HomePage',
   data() {
     return {
       newTweetContent: '',
-      store: useTweetStore(),
+      tweenStore: useTweetStore(),
+      authStore: useAuthStore(),
     };
   },
 
@@ -129,7 +145,7 @@ export default defineComponent({
       return formatDistance(value, new Date(), { addSuffix: true });
     },
     async addNewTweet(): Promise<void> {
-      await this.store.addTweet(this.newTweetContent);
+      await this.tweenStore.addTweet(this.newTweetContent);
       this.newTweetContent = '';
     },
     async deleteTweet(tweet: Tweet): Promise<void> {
@@ -153,7 +169,7 @@ export default defineComponent({
           stackButtons: true,
         })
         .onOk(() => {
-          this.store.deleteTweet(tweet.id).then(() => {
+          this.tweenStore.deleteTweet(tweet.id).then(() => {
             this.$q.notify({
               message: 'Tweet deleted.',
               color: 'secondary',
@@ -163,7 +179,7 @@ export default defineComponent({
         });
     },
     async toogleLike(tweet: Tweet): Promise<void> {
-      await this.store.updateTweet(tweet.id, { like: !tweet.like });
+      await this.tweenStore.updateTweet(tweet.id, { like: !tweet.like });
     },
   },
 });

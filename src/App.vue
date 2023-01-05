@@ -20,7 +20,9 @@ export default defineComponent({
     this.tweenStore.init();
     // this.authStore.init();
     this.authStore.$subscribe((mutation, state) => {
-      if (!state.user.id) {
+      if (state.user.id) {
+        this.$router.push('Home');
+      } else {
         this.$router.push('Login');
       }
     });

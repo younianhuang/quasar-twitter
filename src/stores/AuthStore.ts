@@ -12,6 +12,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
 } from 'firebase/auth';
 
 const firebaseAuth = getAuth();
@@ -24,15 +25,17 @@ export const useAuthStore = defineStore('auth', {
   getters: {},
   actions: {
     async login(email: string, password: string): Promise<void> {
-      const userCred = await signInWithEmailAndPassword(
+      const userCredential = await signInWithEmailAndPassword(
         firebaseAuth,
         email,
         password
       );
 
-      this.user.id = userCred.user.uid;
-      this.user.email = userCred.user.email ?? '';
-      this.user.name = email.substring(0, email.indexOf('@'));
+      this.user.id = userCredential.user.uid;
+      this.user.email = userCredential.user.email ?? '';
+      this.user.name =
+        userCredential.user.displayName ??
+        email.substring(0, email.indexOf('@'));
       this.user.online = true;
     },
 
@@ -43,14 +46,33 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async singup(email: string, password: string): Promise<void> {
-      const userCred = await createUserWithEmailAndPassword(
+      const userCredential = await createUserWithEmailAndPassword(
         firebaseAuth,
         email,
         password
       );
-      this.user.id = userCred.uid;
-      this.user.email = userCred.email ?? '';
+      this.user.id = userCredential.user.uid;
+      this.user.email = userCredential.user.email ?? '';
+      this.user.name =
+        userCredential.user.displayName ??
+        email.substring(0, email.indexOf('@'));
       this.user.online = true;
+    },
+
+    async updateProfile(
+      displayName?: string | null,
+      photoURL?: string | null
+    ): Promise<void> {
+      if (firebaseAuth.currentUser) {
+        await updateProfile(firebaseAuth.currentUser, {
+          displayName: displayName,
+          photoURL: photoURL,
+        });
+
+        if (firebaseAuth.currentUser.displayName) {
+          this.user.name = firebaseAuth.currentUser.displayName;
+        }
+      }
     },
   },
 });

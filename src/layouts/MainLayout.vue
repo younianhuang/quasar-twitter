@@ -29,7 +29,7 @@
           :class="miniModeState ? 'q-pl-md' : 'q-pl-lg'"
         />
         <q-list>
-          <q-item clickable exact to="/" class="focus-item">
+          <q-item clickable exact :to="{ name: 'Home' }" class="focus-item">
             <q-item-section avatar>
               <q-icon size="md" name="home" />
             </q-item-section>
