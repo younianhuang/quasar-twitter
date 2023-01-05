@@ -22,7 +22,11 @@ export const useAuthStore = defineStore('auth', {
     // auth: new Auth(),
     user: new User(),
   }),
-  getters: {},
+  getters: {
+    isLogined(): boolean {
+      return this.user.id !== '';
+    },
+  },
   actions: {
     async login(email: string, password: string): Promise<void> {
       const userCredential = await signInWithEmailAndPassword(

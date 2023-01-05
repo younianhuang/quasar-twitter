@@ -18,7 +18,7 @@ export default defineComponent({
 
   mounted() {
     this.tweenStore.init();
-    // this.authStore.init();
+
     this.authStore.$subscribe((mutation, state) => {
       if (state.user.id) {
         this.$router.push('Home');
@@ -26,11 +26,22 @@ export default defineComponent({
         this.$router.push('Login');
       }
     });
+
+    this.$router.beforeEach(async (to, from) => {
+      // make sure the user is authenticated
+      if (
+        !this.authStore.isLogined &&
+        // Avoid an infinite redirect
+        to.name !== 'Login'
+      ) {
+        // redirect the user to the login page
+        return { name: 'Login' };
+      }
+    });
   },
 
   unmounted() {
     this.tweenStore.shutdown();
-    //this.authStore.shutdown();
   },
 });
 </script>
