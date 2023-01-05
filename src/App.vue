@@ -17,15 +17,18 @@ export default defineComponent({
   },
 
   mounted() {
-    console.log('App init');
     this.tweenStore.init();
-    this.authStore.init();
+    // this.authStore.init();
+    this.authStore.$subscribe((mutation, state) => {
+      if (!state.user.id) {
+        this.$router.push('Login');
+      }
+    });
   },
 
   unmounted() {
-    console.log('App shutdown');
     this.tweenStore.shutdown();
-    this.authStore.shutdown();
+    //this.authStore.shutdown();
   },
 });
 </script>

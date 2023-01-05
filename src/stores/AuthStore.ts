@@ -12,12 +12,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged,
-  Unsubscribe,
 } from 'firebase/auth';
 
 const firebaseAuth = getAuth();
-let unsubscribe = null as Unsubscribe | null;
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -27,35 +24,33 @@ export const useAuthStore = defineStore('auth', {
   getters: {},
   actions: {
     async login(email: string, password: string): Promise<void> {
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const userCred = await signInWithEmailAndPassword(
+        firebaseAuth,
+        email,
+        password
+      );
+
+      this.user.id = userCred.user.uid;
+      this.user.email = userCred.user.email ?? '';
+      this.user.name = email.substring(0, email.indexOf('@'));
+      this.user.online = true;
     },
 
     async logout(): Promise<void> {
       await signOut(firebaseAuth);
+      this.user = new User();
+      this.user.online = false;
     },
 
     async singup(email: string, password: string): Promise<void> {
-      await createUserWithEmailAndPassword(firebaseAuth, email, password);
-    },
-
-    init(): void {
-      if (!unsubscribe) {
-        unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-          if (user) {
-            // User is signed in
-            this.user.id = user.uid;
-            this.user.email = user.email ?? '';
-          } else {
-            // User is signed out
-            this.user = new User();
-          }
-        });
-      }
-    },
-    shutdown(): void {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+      const userCred = await createUserWithEmailAndPassword(
+        firebaseAuth,
+        email,
+        password
+      );
+      this.user.id = userCred.uid;
+      this.user.email = userCred.email ?? '';
+      this.user.online = true;
     },
   },
 });

@@ -7,6 +7,7 @@
         <q-toolbar-title class="text-weight-bold q-pa-md">
           {{ $route.name }}
         </q-toolbar-title>
+        <logout-button v-if="authStore.user.id"></logout-button>
       </q-toolbar>
     </q-header>
 
@@ -126,6 +127,9 @@
 </template>
 
 <script lang="ts">
+import { useAuthStore } from 'stores/AuthStore';
+import LogoutButton from 'components/auth/LogoutButton.vue';
+
 const DefaultLeftDrawertWidth = 300;
 const DefaultRightDrawertWidth = 360;
 const RightDrawerDisplayWidth = 300;
@@ -133,6 +137,10 @@ const MiniWidth = 60;
 const PageWidth = 600;
 
 export default {
+  name: 'MainLayout',
+  components: {
+    LogoutButton,
+  },
   data() {
     return {
       leftDrawerOpen: false,
@@ -142,6 +150,7 @@ export default {
       rightDrawerWidth: DefaultRightDrawertWidth,
       searchText: '',
       miniModeState: false,
+      authStore: useAuthStore(),
     };
   },
 
