@@ -69,9 +69,11 @@
 
           <q-item-section>
             <q-item-label>
-              <span class="text-weight-bold">Nolan Huang</span>
-              ><span class="text-grey-7"> @nolanhuang</span
-              ><span class="text-grey-7">
+              <span class="text-weight-bold"> {{ authStore.user.name }}</span>
+              <span class="text-grey-7">
+                @{{ authStore.user.name.toLocaleLowerCase() }}</span
+              >
+              <span class="text-grey-7">
                 · {{ relativeDate(tweet.date) }}</span
               ></q-item-label
             >
