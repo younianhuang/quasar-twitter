@@ -116,6 +116,7 @@
                 color="grey-7"
                 icon="fa-regular fa-trash-can"
                 size="sm"
+                :disable="authStore.user.id !== tweet.userSnippet.id"
                 @click="deleteTweet(tweet)"
               />
             </div>
