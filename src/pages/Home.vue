@@ -8,7 +8,7 @@
             dense
             color="orange"
             round
-            :label="authStore.user.name.charAt(0)"
+            :label="authStore.user.name.charAt(0).toLocaleUpperCase()"
             class=""
           >
           </q-btn>
@@ -61,7 +61,7 @@
               <q-badge
                 rounded
                 color="orange"
-                :label="authStore.user.name.charAt(0)"
+                :label="tweet.userSnippet.name.charAt(0).toLocaleUpperCase()"
                 class="text-body2"
               />
             </q-avatar>
@@ -69,10 +69,10 @@
 
           <q-item-section>
             <q-item-label>
-              <span class="text-weight-bold"> {{ authStore.user.name }}</span>
-              <span class="text-grey-7">
-                @{{ authStore.user.name.toLocaleLowerCase() }}</span
+              <span class="text-weight-bold">
+                {{ tweet.userSnippet.name }}</span
               >
+              <span class="text-grey-7"> @{{ tweet.userSnippet.name }}</span>
               <span class="text-grey-7">
                 · {{ relativeDate(tweet.date) }}</span
               ></q-item-label
@@ -132,6 +132,8 @@ import { formatDistance } from 'date-fns';
 import { useTweetStore, Tweet } from 'stores/TweetStore';
 import { useAuthStore } from 'stores/AuthStore';
 
+import { Unsubscribe } from 'firebase/firestore';
+
 export default defineComponent({
   name: 'HomePage',
   data() {
@@ -139,7 +141,16 @@ export default defineComponent({
       newTweetContent: '',
       tweenStore: useTweetStore(),
       authStore: useAuthStore(),
+      unsubscribe: <Unsubscribe | null>null,
     };
+  },
+  mounted() {
+    this.unsubscribe = this.tweenStore.onSnapshotLatestTweets();
+  },
+  unmounted() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
   },
 
   methods: {

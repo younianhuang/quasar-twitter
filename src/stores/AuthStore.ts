@@ -23,7 +23,7 @@ export const useAuthStore = defineStore('auth', {
     user: new User(),
   }),
   getters: {
-    isLogined(): boolean {
+    isAuthenticated(): boolean {
       return this.user.id !== '';
     },
   },
