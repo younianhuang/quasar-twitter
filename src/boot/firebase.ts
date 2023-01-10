@@ -1,6 +1,12 @@
 // Import the functions you need from the SDKs you need
+import { boot } from 'quasar/wrappers';
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { TweetService } from 'src/tweet/TweetService';
+import { FirebaseTweetRepository } from '../tweet/data/FirebaseTweetRepository';
+import { useTweetStore } from './../stores/TweetStore';
+import { useAuthStore } from './../stores/AuthStore';
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -19,3 +25,13 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);
+
+export default boot(({ app }) => {
+  const repository = new FirebaseTweetRepository(db);
+  const tweetService = new TweetService(
+    repository,
+    useTweetStore(),
+    useAuthStore()
+  );
+  app.provide<TweetService>('TweetService', tweetService);
+});

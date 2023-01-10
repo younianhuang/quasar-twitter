@@ -8,7 +8,7 @@
             dense
             color="orange"
             round
-            :label="authStore.user.name.charAt(0).toLocaleUpperCase()"
+            :label="user.name.charAt(0).toLocaleUpperCase()"
             class=""
           >
           </q-btn>
@@ -42,7 +42,7 @@
           color="primary"
           label="Tweet"
           :disable="!newTweetContent"
-          @click="addNewTweet"
+          @click="createNewTweet"
         />
       </div>
     </div>
@@ -54,7 +54,7 @@
         enter-active-class="animated fadeIn slower"
         leave-active-class="animated fadeOut slower"
       >
-        <q-item v-for="tweet in tweenStore.tweets" :key="tweet.id" clickable>
+        <q-item v-for="tweet in tweets" :key="tweet.id" clickable>
           <q-item-section avatar top>
             <q-avatar>
               <!-- <img src="https://cdn.quasar.dev/img/avatar2.jpg" /> -->
@@ -116,7 +116,7 @@
                 color="grey-7"
                 icon="fa-regular fa-trash-can"
                 size="sm"
-                :disable="authStore.user.id !== tweet.userSnippet.id"
+                :disable="user.id !== tweet.userSnippet.id"
                 @click="deleteTweet(tweet)"
               />
             </div>
@@ -128,38 +128,33 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, inject } from 'vue';
+import { mapState } from 'pinia';
 import { formatDistance } from 'date-fns';
-import { useTweetStore, Tweet } from 'stores/TweetStore';
 import { useAuthStore } from 'stores/AuthStore';
-
-import { Unsubscribe } from 'firebase/firestore';
+import { Tweet, TweetService } from '../tweet';
 
 export default defineComponent({
   name: 'HomePage',
   data() {
     return {
       newTweetContent: '',
-      tweenStore: useTweetStore(),
-      authStore: useAuthStore(),
-      unsubscribe: <Unsubscribe | null>null,
+      tweetService: inject<TweetService>('TweetService'),
     };
   },
   mounted() {
-    this.unsubscribe = this.tweenStore.onSnapshotLatestTweets();
+    this.tweetService?.startWatch();
   },
   unmounted() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
+    this.tweetService?.stopWatch();
   },
 
   methods: {
     relativeDate(value: number): string {
       return formatDistance(value, new Date(), { addSuffix: true });
     },
-    async addNewTweet(): Promise<void> {
-      await this.tweenStore.addTweet(this.newTweetContent);
+    async createNewTweet(): Promise<void> {
+      await this.tweetService?.createNewTweet(this.newTweetContent);
       this.newTweetContent = '';
     },
     async deleteTweet(tweet: Tweet): Promise<void> {
@@ -183,7 +178,7 @@ export default defineComponent({
           stackButtons: true,
         })
         .onOk(() => {
-          this.tweenStore.deleteTweet(tweet.id).then(() => {
+          this.tweetService?.deleteTweet(tweet.id).then(() => {
             this.$q.notify({
               message: 'Tweet deleted.',
               color: 'secondary',
@@ -193,8 +188,16 @@ export default defineComponent({
         });
     },
     async toogleLike(tweet: Tweet): Promise<void> {
-      await this.tweenStore.updateTweet(tweet.id, { like: !tweet.like });
+      await this.tweetService?.updateTweet(tweet.id, { like: !tweet.like });
     },
+  },
+
+  computed: {
+    tweets(): Tweet[] {
+      return this.tweetService?.TweetStore.tweets;
+    },
+
+    ...mapState(useAuthStore, ['user']),
   },
 });
 </script>

@@ -15,12 +15,13 @@ import {
   updateProfile,
 } from 'firebase/auth';
 
-const firebaseAuth = getAuth();
+// const this.firebaseAuth = getAuth();
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     // auth: new Auth(),
     user: new User(),
+    firebaseAuth: getAuth(),
   }),
   getters: {
     isAuthenticated(): boolean {
@@ -30,7 +31,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(email: string, password: string): Promise<void> {
       const userCredential = await signInWithEmailAndPassword(
-        firebaseAuth,
+        this.firebaseAuth,
         email,
         password
       );
@@ -44,14 +45,14 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async logout(): Promise<void> {
-      await signOut(firebaseAuth);
+      await signOut(this.firebaseAuth);
       this.user = new User();
       this.user.online = false;
     },
 
     async singup(email: string, password: string): Promise<void> {
       const userCredential = await createUserWithEmailAndPassword(
-        firebaseAuth,
+        this.firebaseAuth,
         email,
         password
       );
@@ -67,14 +68,14 @@ export const useAuthStore = defineStore('auth', {
       displayName?: string | null,
       photoURL?: string | null
     ): Promise<void> {
-      if (firebaseAuth.currentUser) {
-        await updateProfile(firebaseAuth.currentUser, {
+      if (this.firebaseAuth.currentUser) {
+        await updateProfile(this.firebaseAuth.currentUser, {
           displayName: displayName,
           photoURL: photoURL,
         });
 
-        if (firebaseAuth.currentUser.displayName) {
-          this.user.name = firebaseAuth.currentUser.displayName;
+        if (this.firebaseAuth.currentUser.displayName) {
+          this.user.name = this.firebaseAuth.currentUser.displayName;
         }
       }
     },
