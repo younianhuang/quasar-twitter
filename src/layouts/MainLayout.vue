@@ -7,7 +7,7 @@
         <q-toolbar-title class="text-weight-bold q-pa-md">
           {{ $route.name }}
         </q-toolbar-title>
-        <logout-button v-if="authStore.user.id"></logout-button>
+        <logout-button v-if="user.id"></logout-button>
       </q-toolbar>
     </q-header>
 
@@ -127,8 +127,10 @@
 </template>
 
 <script lang="ts">
-import { useAuthStore } from 'stores/AuthStore';
+import { User } from 'stores/AuthStore';
+import { inject } from 'vue';
 import LogoutButton from 'components/auth/LogoutButton.vue';
+import { AuthService } from '../auth';
 
 const DefaultLeftDrawertWidth = 300;
 const DefaultRightDrawertWidth = 360;
@@ -150,7 +152,7 @@ export default {
       rightDrawerWidth: DefaultRightDrawertWidth,
       searchText: '',
       miniModeState: false,
-      authStore: useAuthStore(),
+      authService: inject<AuthService>('AuthService'),
     };
   },
 
@@ -196,6 +198,9 @@ export default {
 
     isMobile(): boolean {
       return this.$q.platform.is.mobile ? true : false;
+    },
+    user(): User {
+      return this.authService?.authState.user as User;
     },
   },
 

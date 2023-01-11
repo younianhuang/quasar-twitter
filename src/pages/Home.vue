@@ -129,10 +129,10 @@
 
 <script lang="ts">
 import { defineComponent, inject } from 'vue';
-import { mapState } from 'pinia';
 import { formatDistance } from 'date-fns';
-import { useAuthStore } from 'stores/AuthStore';
+import { User } from 'stores/AuthStore';
 import { Tweet, TweetService } from '../tweet';
+import { AuthService } from '../auth';
 
 export default defineComponent({
   name: 'HomePage',
@@ -140,13 +140,14 @@ export default defineComponent({
     return {
       newTweetContent: '',
       tweetService: inject<TweetService>('TweetService'),
+      authService: inject<AuthService>('AuthService'),
     };
   },
   mounted() {
-    this.tweetService?.startWatch();
+    //
   },
   unmounted() {
-    this.tweetService?.stopWatch();
+    //
   },
 
   methods: {
@@ -197,7 +198,9 @@ export default defineComponent({
       return this.tweetService?.tweetState.tweets as Tweet[];
     },
 
-    ...mapState(useAuthStore, ['user']),
+    user(): User {
+      return this.authService?.authState.user as User;
+    },
   },
 });
 </script>

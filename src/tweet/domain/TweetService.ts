@@ -1,26 +1,26 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Tweet } from './Tweet';
 import { TweetRepository, EventType, Unsubscribe } from './TweetRepository';
 import { TweetState } from 'src/stores/TweetStore';
+import { AuthState } from './../../stores/AuthStore';
 
 export class TweetService {
   private _tweetRepository: TweetRepository;
   private _tweetState: TweetState;
-  private _authStore: any;
+  private _authState: AuthState;
   private _unsubscribe: Unsubscribe | null = null;
 
   constructor(
     tweetRepository: TweetRepository,
     tweetState: TweetState,
-    authStore: any
+    authState: AuthState
   ) {
     this._tweetRepository = tweetRepository;
     this._tweetState = tweetState;
-    this._authStore = authStore;
+    this._authState = authState;
   }
 
   public async createNewTweet(content: string): Promise<void> {
-    const user = this._authStore.user;
+    const user = this._authState.user;
 
     this._tweetRepository.addTweet({
       id: '',
@@ -85,6 +85,7 @@ export class TweetService {
   public stopWatch() {
     if (this._unsubscribe) {
       this._unsubscribe();
+      this._unsubscribe = null;
     }
   }
 }

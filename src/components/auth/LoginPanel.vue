@@ -37,14 +37,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useAuthStore } from 'stores/AuthStore';
+import { defineComponent, inject } from 'vue';
+import { AuthService } from '../../auth';
 
 export default defineComponent({
   name: 'LoginPanel',
   data() {
     return {
-      authStore: useAuthStore(),
+      authService: inject<AuthService>('AuthService'),
       email: 'guest@gmail.com',
       password: 'guest1234',
     };
@@ -52,7 +52,7 @@ export default defineComponent({
   methods: {
     async login() {
       try {
-        await this.authStore.login(this.email, this.password);
+        await this.authService?.login(this.email, this.password);
       } catch (err) {
         const error = err as Error;
 

@@ -1,7 +1,7 @@
 <template>
   <q-btn-dropdown
     color="yellow-10"
-    :label="authStore.user.name.charAt(0)"
+    :label="user.name.charAt(0)"
     rounded
     unelevated
     no-icon-animation
@@ -9,32 +9,37 @@
   >
     <div class="column items-center q-pa-lg">
       <q-btn
-        :label="`Log out @${authStore.user.name}`"
+        :label="`Log out @${user.name}`"
         size="md"
         v-close-popup
         no-caps
-        @click="authStore.logout"
+        @click="logout"
       />
     </div>
   </q-btn-dropdown>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useAuthStore } from 'stores/AuthStore';
+import { defineComponent, inject } from 'vue';
+import { User } from 'stores/AuthStore';
+import { AuthService } from '../../auth';
 
 export default defineComponent({
   name: 'LogoutButton',
   data() {
     return {
-      authStore: useAuthStore(),
+      authService: inject<AuthService>('AuthService'),
     };
   },
-  // methods: {
-
-  // },
-  // computed: {
-
-  // }
+  methods: {
+    async logout() {
+      await this.authService?.logout();
+    },
+  },
+  computed: {
+    user(): User {
+      return this.authService?.authState.user as User;
+    },
+  },
 });
 </script>

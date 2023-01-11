@@ -6,7 +6,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useAuthStore } from 'stores/AuthStore';
 import LoginPanel from 'src/components/auth/LoginTabPanel.vue';
 
 export default defineComponent({
@@ -15,26 +14,11 @@ export default defineComponent({
     LoginPanel,
   },
   data() {
-    return {
-      authStore: useAuthStore(),
-      email: 'guest@gamil.com',
-      password: 'guest1234',
-    };
+    return {};
   },
 
   methods: {
-    async onSubmit() {
-      try {
-        await this.authStore.login(this.email, this.password);
-      } catch (err) {
-        const error = err as Error;
-
-        this.$q.dialog({
-          title: 'Login Failed',
-          message: error.message,
-        });
-      }
-    },
+    //
   },
   mounted() {
     //

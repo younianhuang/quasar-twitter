@@ -3,32 +3,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useTweetStore } from 'stores/TweetStore';
-import { useAuthStore } from 'stores/AuthStore';
+import { defineComponent, inject } from 'vue';
+import { AuthService } from './auth';
+import { TweetService } from './tweet';
 
 export default defineComponent({
   name: 'App',
   data() {
     return {
-      tweenStore: useTweetStore(),
-      authStore: useAuthStore(),
+      authService: inject<AuthService>('AuthService'),
+      tweetService: inject<TweetService>('TweetService'),
     };
   },
 
   mounted() {
-    this.authStore.$subscribe((mutation, state) => {
-      if (state.user.id) {
-        this.$router.push('Home');
-      } else {
-        this.$router.push('Login');
-      }
-    });
-
     this.$router.beforeEach(async (to, from) => {
       // make sure the user is authenticated
       if (
-        !this.authStore.isAuthenticated &&
+        !this.isAuthenticated &&
         // Avoid an infinite redirect
         to.name !== 'Login'
       ) {
@@ -40,6 +32,28 @@ export default defineComponent({
 
   unmounted() {
     //
+  },
+
+  computed: {
+    isAuthenticated() {
+      return this.authService?.authState.isAuthenticated;
+    },
+  },
+
+  watch: {
+    isAuthenticated: {
+      handler(isLogined) {
+        if (isLogined) {
+          this.tweetService?.startWatch();
+          this.$router.push('Home');
+        } else {
+          this.tweetService?.stopWatch();
+          this.$router.push('Login');
+        }
+      },
+      // force eager callback execution
+      immediate: true,
+    },
   },
 });
 </script>
