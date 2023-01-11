@@ -12,6 +12,10 @@ This is a simple Twitter clone made with Vue.js and Quasar framework.
 - Cloud FireStore
 - typescript
 
+## Architecture
+
+This architecutre of this app is inspired by Domain-Driven Design and Clean architecture.
+
 ## Live Demo
 
 https://quasar-twitter.web.app/#/
