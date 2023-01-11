@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import { defineComponent, inject } from 'vue';
-import { AuthService } from '../../auth';
+import { AuthService } from '../domain/AuthService';
 
 export default defineComponent({
   name: 'LoginPanel',

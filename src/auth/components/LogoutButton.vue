@@ -21,8 +21,8 @@
 
 <script lang="ts">
 import { defineComponent, inject } from 'vue';
-import { User } from 'stores/AuthStore';
-import { AuthService } from '../../auth';
+import { User } from 'src/stores/AuthStore';
+import { AuthService } from '../domain/AuthService';
 
 export default defineComponent({
   name: 'LogoutButton',

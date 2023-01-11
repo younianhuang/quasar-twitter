@@ -129,7 +129,7 @@
 <script lang="ts">
 import { User } from 'stores/AuthStore';
 import { inject } from 'vue';
-import LogoutButton from 'components/auth/LogoutButton.vue';
+import LogoutButton from '../auth/components/LogoutButton.vue';
 import { AuthService } from '../auth';
 
 const DefaultLeftDrawertWidth = 300;
