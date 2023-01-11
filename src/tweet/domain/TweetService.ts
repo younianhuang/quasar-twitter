@@ -1,27 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Tweet } from './Tweet';
 import { TweetRepository, EventType, Unsubscribe } from './TweetRepository';
+import { TweetState } from 'src/stores/TweetStore';
 
 export class TweetService {
-  private tweetRepository: TweetRepository;
-  private tweetStore: any;
-  private authStore: any;
-  private unsubscribe: Unsubscribe | null = null;
+  private _tweetRepository: TweetRepository;
+  private _tweetState: TweetState;
+  private _authStore: any;
+  private _unsubscribe: Unsubscribe | null = null;
 
   constructor(
     tweetRepository: TweetRepository,
-    tweetStore: any,
+    tweetState: TweetState,
     authStore: any
   ) {
-    this.tweetRepository = tweetRepository;
-    this.tweetStore = tweetStore;
-    this.authStore = authStore;
+    this._tweetRepository = tweetRepository;
+    this._tweetState = tweetState;
+    this._authStore = authStore;
   }
 
   public async createNewTweet(content: string): Promise<void> {
-    const user = this.authStore.user;
+    const user = this._authStore.user;
 
-    this.tweetRepository.addTweet({
+    this._tweetRepository.addTweet({
       id: '',
       content: content,
       date: Date.now(),
@@ -35,24 +36,24 @@ export class TweetService {
   }
 
   public async deleteTweet(id: string): Promise<void> {
-    await this.tweetRepository.deleteTweet(id);
+    await this._tweetRepository.deleteTweet(id);
   }
 
   public async updateTweet(id: string, data: Partial<Tweet>): Promise<void> {
-    await this.tweetRepository.updateTweet(id, data);
+    await this._tweetRepository.updateTweet(id, data);
   }
 
-  public get TweetStore(): any {
-    return this.tweetStore;
+  public get tweetState(): TweetState {
+    return this._tweetState;
   }
 
   /**
    * Start watch the repository change and store the latest snapshot in tweetStore
    */
   public startWatch() {
-    if (!this.unsubscribe) {
-      this.unsubscribe = this.tweetRepository.subscribe((event) => {
-        const tweets = this.tweetStore.tweets as Array<Tweet>;
+    if (!this._unsubscribe) {
+      this._unsubscribe = this._tweetRepository.subscribe((event) => {
+        const tweets = this._tweetState.tweets as Array<Tweet>;
         const tweet = event.data;
         switch (event.type) {
           case EventType.Added:
@@ -82,8 +83,8 @@ export class TweetService {
    * Stop watch the repository change
    */
   public stopWatch() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
+    if (this._unsubscribe) {
+      this._unsubscribe();
     }
   }
 }

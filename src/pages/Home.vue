@@ -194,7 +194,7 @@ export default defineComponent({
 
   computed: {
     tweets(): Tweet[] {
-      return this.tweetService?.TweetStore.tweets;
+      return this.tweetService?.tweetState.tweets as Tweet[];
     },
 
     ...mapState(useAuthStore, ['user']),

@@ -1,10 +1,12 @@
-import { Tweet } from '../Tweet';
-import { EventType, EventData } from './../TweetRepository';
+import { Tweet } from '../domain/Tweet';
+
 import {
+  EventType,
+  EventData,
   TweetRepository,
   SubscriptionCallback,
   Unsubscribe,
-} from '../TweetRepository';
+} from '../domain/TweetRepository';
 
 import {
   Firestore,
